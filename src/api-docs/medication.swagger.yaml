@@ -1,0 +1,154 @@
+openapi: 3.0.0
+info:
+  title: Medication API
+  version: 1.0.0
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+
+  parameters:
+    UuidParam:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: string
+        format: uuid
+
+  schemas:
+    CreateMedicationRequest:
+      type: object
+      required: [patientCode, medicationName, medicationType, frequency, startDate]
+      properties:
+        patientCode: { type: string }
+        medicationName: { type: string }
+        medicationType:
+          type: string
+          enum: [TABLET, CAPSULE, SYRUP, DROP, INJECTION]
+        prescribedBy: { type: string }
+        dosePerIntake: { type: string }
+        frequency:
+          type: string
+          enum: [ONCE_DAILY, TWICE_DAILY, THREE_TIMES_DAILY, AS_NEEDED]
+        bestTaken:
+          type: array
+          items:
+            type: string
+            enum: [MORNING, NOON, EVENING, NIGHT]
+        withFood:
+          type: string
+          enum: [WITH_FOOD, BEFORE_FOOD, AFTER_FOOD, EMPTY_STOMACH]
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        ongoing: { type: boolean }
+        pillsRemaining: { type: integer }
+        doseReminders: { type: boolean }
+        refillAlert: { type: boolean }
+        notes: { type: string }
+
+    UpdateMedicationRequest:
+      type: object
+      properties:
+        medicationName: { type: string }
+        medicationType:
+          type: string
+          enum: [TABLET, CAPSULE, SYRUP, DROP, INJECTION]
+        prescribedBy: { type: string }
+        dosePerIntake: { type: string }
+        frequency:
+          type: string
+          enum: [ONCE_DAILY, TWICE_DAILY, THREE_TIMES_DAILY, AS_NEEDED]
+        bestTaken:
+          type: array
+          items:
+            type: string
+            enum: [MORNING, NOON, EVENING, NIGHT]
+        withFood:
+          type: string
+          enum: [WITH_FOOD, BEFORE_FOOD, AFTER_FOOD, EMPTY_STOMACH]
+        startDate:
+          type: string
+          format: date
+        endDate:
+          type: string
+          format: date
+          nullable: true
+        ongoing: { type: boolean }
+        pillsRemaining: { type: integer }
+        doseReminders: { type: boolean }
+        refillAlert: { type: boolean }
+        notes: { type: string }
+
+paths:
+  /medication/add:
+    post:
+      tags: [Medication]
+      security:
+        - bearerAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateMedicationRequest"
+      responses:
+        "201": { description: Created }
+
+  /medication/list:
+    get:
+      tags: [Medication]
+      security:
+        - bearerAuth: []
+      responses:
+        "200": { description: List }
+
+  /medication/{id}:
+    get:
+      tags: [Medication]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UuidParam"
+      responses:
+        "200": { description: Found }
+
+    put:
+      tags: [Medication]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UuidParam"
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateMedicationRequest"
+      responses:
+        "200": { description: Updated }
+
+  /medication/soft-delete/{id}:
+    delete:
+      tags: [Medication]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UuidParam"
+      responses:
+        "200": { description: Deleted }
+
+  /medication/hard-delete/{id}:
+    delete:
+      tags: [Medication]
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: "#/components/parameters/UuidParam"
+      responses:
+        "200": { description: Permanently deleted }
