@@ -57,6 +57,13 @@
       "when": 1779087120918,
       "tag": "0007_large_shriek",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1779098394569,
+      "tag": "0008_harsh_warstar",
+      "breakpoints": true
     }
   ]
 }

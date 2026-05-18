@@ -19,6 +19,7 @@ const medicationTypeEnum = pgEnum("medication_type", medicationTypeValues);
 const frequencyEnum = pgEnum("frequency_type", frequencyTypeValues);
 const foodEnum = pgEnum("food_type", foodTypeValues);
 const { patient } = require("./patient");
+const { text } = require("drizzle-orm/pg-core");
 
 const medication = pgTable(
   "medications",
@@ -35,7 +36,7 @@ const medication = pgTable(
       length: 32,
     }).notNull(),
 
-    medicationName: varchar("medication_name", {
+    medicationName: text("medication_name", {
       length: 255,
     }).notNull(),
 
