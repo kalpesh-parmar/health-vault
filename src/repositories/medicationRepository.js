@@ -40,7 +40,7 @@ function buildMedicationFilters(filters = {}, userId) {
         ilike(medication.notes, search),
         ilike(sql`${medication.medicationType}::text`, search),
         ilike(sql`${medication.frequency}::text`, search),
-        ilike(sql`${medication.withFood}::text`, search),
+        ilike(sql`${medication.foodFrequency}::text`, search),
       ),
     );
   }

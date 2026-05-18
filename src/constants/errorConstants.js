@@ -76,6 +76,11 @@ const errorConstants = Object.freeze({
   INVALID_DATE_FORMAT: "Invalid date format",
   ONE_TIME_IS_REQUIRED: "At least one time required",
   USER_NOT_FOUND: "User not found",
+  CUSTOM_ONLY_ONCE: "CUSTOM can only be selected once",
+  MEDICATION_TIME_MATCH: "Medication time count must match best taken count",
+  MAX_MEDICATION_TIME: "Maximum medication time exceeded",
+  UNIT_REQUIRED: "Unit is required",
+  INVALID_UNIT: "Invalid Unit allowd only PILLS , ML , DROPS , UNITS",
 });
 
 module.exports = { errorConstants };

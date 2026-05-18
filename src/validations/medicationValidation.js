@@ -5,6 +5,7 @@ const { foodTypeValues } = require("../enums/foodType");
 const { frequencyTypeValues } = require("../enums/frequencyType");
 const { medicationTypeValues } = require("../enums/medicationType");
 const { bestTakenValues } = require("../enums/bestTakenType");
+const { mediactionUnitValues } = require("../enums/medicationUnit");
 
 const medicationNameField = z
   .string({
@@ -33,6 +34,65 @@ const dateField = z.coerce.date({
   invalid_type_error: errorConstants.INVALID_DATE,
   required_error: errorConstants.DATE_REQUIRED,
 });
+//comman validation function
+const validateMedicationSelections = (data, ctx) => {
+  if (!data.frequency) {
+    return;
+  }
+
+  //frequency limit map
+  const frequencyLimitMap = {
+    ONCE_DAILY: 1,
+    TWICE_DAILY: 2,
+    THREE_TIMES_DAILY: 3,
+  };
+
+  const allowedCount = frequencyLimitMap[data.frequency];
+
+  //mecication time validation
+  if (allowedCount && data.medicationTime && data.medicationTime.length > allowedCount) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["medicationTime"],
+      message: `Maximum ${allowedCount} medication times allowed for ${data.frequency}`,
+    });
+  }
+
+  //best taken validation
+  if (data.bestTaken?.length) {
+    const customCount = data.bestTaken.filter((value) => value === bestTakenValues.CUSTOM).length;
+
+    // Prevent duplicate CUSTOM
+    if (customCount > 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["bestTaken"],
+        message: errorConstants.CUSTOM_ONLY_ONCE,
+      });
+    }
+
+    //validation total count based on frequency
+    if (allowedCount && data.bestTaken.length > allowedCount) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["bestTaken"],
+        message: `Maximum ${allowedCount} medication times allowed for ${data.frequency}`,
+      });
+    }
+  }
+  //match medicationTime count
+  if (
+    data.bestTaken &&
+    data.medicationTime &&
+    data.bestTaken.length !== data.medicationTime.length
+  ) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["medicationTime"],
+      message: errorConstants.MEDICATION_TIME_MATCH,
+    });
+  }
+};
 
 //CREATE SCHEMA
 const createMedicationSchema = z
@@ -69,15 +129,20 @@ const createMedicationSchema = z
 
     bestTaken: z.array(z.enum(bestTakenValues)).min(1, errorConstants.ONE_REQUIRED).optional(),
 
-    withFood: z.enum(foodTypeValues).optional(),
+    foodFrequency: z.enum(foodTypeValues).optional(),
 
     startDate: dateField,
 
     endDate: dateField.optional().nullable(),
 
+    unit: z.enum(mediactionUnitValues, {
+      required_error: errorConstants.UNIT_REQUIRED,
+      invalid_type_error: errorConstants.INVALID_UNIT,
+    }),
+
     ongoing: z.boolean().default(false),
 
-    totalPills: z
+    totalQuantity: z
       .number({
         required_error: errorConstants.TOTAL_PILLS_REQUIRED,
       })
@@ -86,13 +151,21 @@ const createMedicationSchema = z
 
     doseReminders: z.boolean().default(false),
 
+    reminderBeforeMinutes: z
+      .number({
+        invalid_type_error: errorConstants.INVALID_NUMBER,
+      })
+      .int()
+      .optional()
+      .default(5),
+
     refillAlert: z.boolean().default(false),
 
     notes: z.string().trim().max(1000).optional().nullable(),
   })
   .strict()
   .superRefine((data, ctx) => {
-    if (data.totalPills !== undefined && data.dosePerIntake > data.totalPills) {
+    if (data.totalQuantity !== undefined && data.dosePerIntake > data.totalQuantity) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["dosePerIntake"],
@@ -112,6 +185,8 @@ const createMedicationSchema = z
         });
       }
     }
+
+    validateMedicationSelections(data, ctx);
   });
 
 //UPDATE SCHEMA
@@ -144,23 +219,50 @@ const updateMedicationSchema = z
 
     bestTaken: z.array(z.enum(bestTakenValues)).optional(),
 
-    withFood: z.enum(foodTypeValues).optional(),
+    foodFrequency: z.enum(foodTypeValues).optional(),
 
     startDate: dateField.optional(),
 
     ongoing: z.boolean().optional(),
 
-    totalPills: z.number().int().min(0).optional(),
+    totalQuantity: z.number().int().min(0).optional(),
 
+    unit: z
+      .enum(mediactionUnitValues, {
+        invalid_type_error: errorConstants.INVALID_UNIT,
+      })
+      .optional(),
     doseReminders: z.boolean().optional(),
 
-    remainingPills: z.number().int().min(0).optional(),
+    reminderBeforeMinutes: z
+      .number({
+        invalid_type_error: errorConstants.INVALID_NUMBER,
+      })
+      .int()
+      .optional()
+      .default(5),
+
+    remainingQuantity: z.number().int().min(0).optional(),
 
     refillAlert: z.boolean().optional(),
 
     notes: z.string().trim().max(1000).optional().nullable(),
   })
-  .strict();
+  .strict()
+  .superRefine((data, ctx) => {
+    if (
+      data.totalQuantity !== undefined &&
+      data.dosePerIntake !== undefined &&
+      data.dosePerIntake > data.totalQuantity
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["dosePerIntake"],
+        message: errorConstants.DOSE_GREATER_THAN_PILLS,
+      });
+    }
+    validateMedicationSelections(data, ctx);
+  });
 
 //LIST QUERY SCHEMA
 const listMedicationQuerySchema = z

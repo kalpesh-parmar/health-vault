@@ -27,7 +27,7 @@ function calculateMedicationValues(data) {
 
   const dailyConsumption = data.dosePerIntake * timesPerDay;
 
-  const totalDays = Math.ceil(data.totalPills / dailyConsumption);
+  const totalDays = Math.ceil(data.totalQuantity / dailyConsumption);
 
   let endDate = null;
 
@@ -45,7 +45,7 @@ function calculateMedicationValues(data) {
 
   const consumed = daysPassed * dailyConsumption;
 
-  const remainingQuantity = Math.max(data.totalPills - consumed, 0);
+  const remainingQuantity = Math.max(data.totalQuantity - consumed, 0);
 
   const unit = getUnitByMedicationType(data.medicationType);
 

@@ -7,22 +7,17 @@ const {
   timestamp,
   date,
   json,
+
   uuid,
   varchar,
 } = require("drizzle-orm/pg-core");
 
 const { medicationTypeValues } = require("../enums/medicationType");
-
 const { frequencyTypeValues } = require("../enums/frequencyType");
-
 const { foodTypeValues } = require("../enums/foodType");
-
 const medicationTypeEnum = pgEnum("medication_type", medicationTypeValues);
-
 const frequencyEnum = pgEnum("frequency_type", frequencyTypeValues);
-
 const foodEnum = pgEnum("food_type", foodTypeValues);
-
 const { patient } = require("./patient");
 
 const medication = pgTable(
@@ -59,7 +54,7 @@ const medication = pgTable(
       length: 50,
     }).array(),
 
-    withFood: foodEnum("with_food"),
+    foodFrequency: foodEnum("food_frequency"),
 
     startDate: date("start_date").notNull(),
 
@@ -67,8 +62,7 @@ const medication = pgTable(
 
     ongoing: boolean("ongoing").default(false).notNull(),
 
-    // DB COLUMN = total_quantity
-    totalPills: integer("total_quantity").default(0),
+    totalQuantity: integer("total_quantity").default(0),
 
     remainingQuantity: integer("remaining_quantity").default(0),
 
@@ -81,6 +75,8 @@ const medication = pgTable(
     dailyConsumption: integer("daily_consumption").default(0).notNull(),
 
     refillAlert: boolean("refill_alert").default(false),
+
+    reminderBeforeMinutes: integer("reminder_before_minutes").default(5).notNull(),
 
     notes: varchar("notes", {
       length: 1000,

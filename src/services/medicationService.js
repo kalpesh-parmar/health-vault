@@ -23,8 +23,7 @@ class MedicationService {
       throw new NotFoundException(errorConstants.PATIENT_NOT_FOUND);
     }
 
-    const { endDate, remainingQuantity, dailyConsumption, unit } =
-      calculateMedicationValues(validData);
+    const { endDate, remainingQuantity, dailyConsumption } = calculateMedicationValues(validData);
 
     return medicationRepository.create({
       userId,
@@ -35,7 +34,6 @@ class MedicationService {
       endDate,
       remainingQuantity,
       dailyConsumption,
-      unit,
     });
   }
 
