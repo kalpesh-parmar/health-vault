@@ -56,19 +56,12 @@ const medication = pgTable(
     }).array(),
 
     foodFrequency: foodEnum("food_frequency"),
-
     startDate: date("start_date").notNull(),
-
     endDate: date("end_date"),
-
     ongoing: boolean("ongoing").default(false).notNull(),
-
     totalQuantity: integer("total_quantity").default(0),
-
     remainingQuantity: integer("remaining_quantity").default(0),
-
     doseReminders: boolean("dose_reminders").default(false),
-
     unit: varchar("unit", {
       length: 20,
     }).notNull(),

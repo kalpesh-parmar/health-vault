@@ -31,14 +31,11 @@ EXCEPTION
 END $$;
 
 CREATE TYPE "medication_type" AS ENUM ('TABLET','CAPSULE','SYRUP','DROP','INJECTION');
-
 CREATE TYPE "frequency_type" AS ENUM ('ONCE_DAILY','TWICE_DAILY','THREE_TIMES_DAILY','AS_NEEDED');
-
-CREATE TYPE food_type AS ENUM (,'BEFORE_FOOD','AFTER_FOOD');
-
+CREATE TYPE food_type AS ENUM ('BEFORE_FOOD','AFTER_FOOD');
 CREATE TYPE best_taken AS ENUM ('MORNING','NOON','NIGHT','CUSTOM');
-
 CREATE TYPE medication_unit AS ENUM ('PILLS','ML','DROPS','UNITS');
+
 
 CREATE TABLE IF NOT EXISTS "patients" (
   "id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
@@ -128,7 +125,7 @@ CREATE TABLE IF NOT EXISTS "medications" (
   "frequency" frequency_type NOT NULL,
   "medication_times" json,
   "best_taken" varchar(50)[],
-  "food_frequecy" food_type,
+  "food_frequency" food_type,
   "start_date" date NOT NULL,
   "end_date" date,
   "ongoing" boolean DEFAULT false NOT NULL,
@@ -147,13 +144,10 @@ CREATE TABLE IF NOT EXISTS "medications" (
 
 CREATE INDEX IF NOT EXISTS "medications_patient_code_idx"
 ON "medications" ("patient_code");
-
 CREATE INDEX IF NOT EXISTS "medications_name_idx"
 ON "medications" ("medication_name");
-
 CREATE INDEX IF NOT EXISTS "medications_start_date_idx"
 ON "medications" ("start_date");
-
 CREATE INDEX IF NOT EXISTS "patients_status_idx" ON "patients" ("status");
 CREATE INDEX IF NOT EXISTS "patients_soft_delete_idx" ON "patients" ("soft_delete");
 CREATE INDEX IF NOT EXISTS "patients_email_idx" ON "patients" ("email");
