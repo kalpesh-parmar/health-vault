@@ -4,7 +4,7 @@ const { paginatedSuccessResponse, successResponse } = require("../helpers/genera
 const documentService = require("../services/documentService");
 
 async function addDocument(req, res) {
-  const result = await documentService.createDocument(req.auth.userId, req.file, req.body);
+  const result = await documentService.createDocument(req.auth.userId, req.body);
   return successResponse(res, result, messageConstants.DOCUMENT_CREATED, StatusCodes.CREATED);
 }
 

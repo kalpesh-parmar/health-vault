@@ -23,40 +23,31 @@ const { medicalPrompt, cleanOCRText } = require("../prompt/structureDataPrompt")
 // const ollamaService = require("./ollamaService");
 const { model } = require("../configs/aiConfig");
 class DocumentService {
-  async createDocument(userId, file, docType) {
-    if (!file) {
-      throw new InvalidRequestException(messageConstants.FILE_IS_REQUIRED);
+  async createDocument(userId, data) {
+    if (!data) {
+      throw new InvalidRequestException(messageConstants.REQUIRED);
     }
-
-    if (!docType) {
-      throw new InvalidRequestException(messageConstants.DOCUMENT_TYPE_IS_REQUIRED);
-    }
-
-    // upload file using s3 service
-    const uploadedFile = await s3service.uploadFile(file);
-    const fileinfo = {
-      fileType: file.mimetype,
-      fileStoragePath: uploadedFile.fileStoragePath,
-      fileName: file.originalname,
-      fileSize: file.size,
-      documentType: docType.documentType,
-      s3Bucket: uploadedFile.bucket,
-      s3Key: uploadedFile.fileKey,
+    console.log("data==", data);
+    const validData = await validateSchema(createDocumentSchema, data);
+    const insertData = {
+      userId: userId,
+      documentType: validData.documentType,
+      fileName: validData.fileName,
+      fileSize: validData.fileSize,
+      filePath: validData.filePath,
+      fileType: validData.fileType,
+      s3Bucket: validData.s3Bucket,
+      s3Key: validData.s3Key,
     };
-
-    const validData = await validateSchema(createDocumentSchema, fileinfo);
-    const document = await documentRepository.create({
-      userId,
-      ...validData,
-    });
+    const document = await documentRepository.create(insertData);
     await documentRepository.update(document.id, {
       ocrStatus: ocrStatus.IN_PROGRESS,
     });
 
     //ocr API
     const ocrResponse = await axios.post("http://127.0.0.1:8000/run-ocr", {
-      fileKey: uploadedFile.fileKey,
-      bucket: uploadedFile.bucket,
+      fileKey: insertData.s3Key,
+      bucket: insertData.s3Bucket,
     });
     const fullText = ocrResponse.data.ocr_text;
     const graph = ocrResponse.data.graphs;
