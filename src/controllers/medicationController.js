@@ -34,20 +34,23 @@ async function getMedicationById(req, res) {
 
 //get mediaction list
 async function getMedicationList(req, res) {
-  const result = await medicationService.getMedicationList();
+  const userId = req.auth.userId;
+  const result = await medicationService.getMedicationList(userId);
   return successResponse(res, result, messageConstants.MEDICATION_LIST_FETCHED);
 }
 
 //filtered list
 async function listMedications(req, res) {
-  const result = await medicationService.listMedications(req.body, req.auth.userId);
+  const userId = req.auth.userId;
+  const result = await medicationService.listMedications(req.body, userId);
 
   return successResponse(res, result, messageConstants.MEDICATION_FILTERED_LIST_FETCHED);
 }
 
 //pagination list
 async function listMedicationsPaginated(req, res) {
-  const result = await medicationService.listMedicationsPaginated(req.body, req.auth.userId);
+  const userId = req.auth.userId;
+  const result = await medicationService.listMedicationsPaginated(req.body, userId);
 
   return paginatedSuccessResponse(
     res,

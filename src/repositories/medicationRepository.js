@@ -73,16 +73,8 @@ class MedicationRepository {
 
     return result[0] || null;
   }
-  //filtered list
   async findAllWithFilters({ filter = {}, sort = {}, userId }) {
-    // existing filters
-    const filterWhere = buildMedicationFilters(filter);
-
-    // add userId filter
-    const where = filterWhere
-      ? and(filterWhere, eq(medication.userId, userId))
-      : eq(medication.userId, userId);
-
+    const where = buildMedicationFilters(filter, userId);
     const orderClause = buildOrderClause(sort);
     const rows = await db.select().from(medication).where(where).orderBy(orderClause);
     const totalRows = await db.select({ total: count() }).from(medication).where(where);
@@ -123,8 +115,11 @@ class MedicationRepository {
     };
   }
 
-  async findAll() {
-    const result = await db.select().from(medication).where(eq(medication.softDelete, false));
+  async findAll(userId) {
+    const result = await db
+      .select()
+      .from(medication)
+      .where(and(eq(medication.softDelete, false), eq(medication.userId, userId)));
 
     return result;
   }
