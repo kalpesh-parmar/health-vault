@@ -5,33 +5,25 @@ const notificationRoutes = require("./notificationRoutes");
 const patientRoutes = require("./patientRoutes");
 const sessionRoutes = require("./sessionRoutes");
 const authRoutes = require("./authRoutes");
-const { db } = require("../configs/db");
-const { StatusCodes } = require("http-status-codes");
+const medicationRoutes = require("./medicationRoutes");
+const { messageConstants } = require("../constants/messageConstants");
+const { successResponse } = require("../helpers/generalResponse");
 
 const router = express.Router();
 
-router.get("/health", async (_req, res) => {
-  try {
-    // Test database connection
-    await db.$client.query("SELECT 1");
-    res.json({
-      status: "ok",
-      timestamp: new Date().toISOString(),
+router.use("/health", (_req, res) =>
+  successResponse(
+    res,
+    {
       uptime: process.uptime(),
-      database: "connected",
-    });
-  } catch (error) {
-    console.error("[health] Database connection failed:", error);
-    res.status(StatusCodes.SERVICE_UNAVAILABLE).json({
-      status: "error",
       timestamp: new Date().toISOString(),
-      uptime: process.uptime(),
-      database: "disconnected",
-    });
-  }
-});
+    },
+    messageConstants.HEALTH_CHECK_SUCCESS,
+  ),
+);
 router.use("/auth", authRoutes);
 router.use("/documents", documentRoutes);
+router.use("/medications", medicationRoutes);
 router.use("/notifications", notificationRoutes);
 router.use("/session", sessionRoutes);
 router.use("/patient", patientRoutes);

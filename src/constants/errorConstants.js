@@ -26,7 +26,6 @@ const errorConstants = Object.freeze({
   UNAUTHORIZED: "Unauthorized",
   VALIDATION_FAILED: "Validation failed",
   USER_NAME_INVALID: "User name can only contain alphanumeric characters",
-
   DATE_OF_BIRTH_REQUIRED: "Date of birth is required",
   EMAIL_REQUIRED: "Email is required",
   EMAIL_TOO_LONG: "Email is too long",
