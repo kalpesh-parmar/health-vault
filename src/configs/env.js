@@ -18,6 +18,7 @@ const env = Object.freeze({
   appUrl: process.env.APP_URL || "http://localhost:3000",
   awsAccessKeyId: process.env.AWS_ACCESS_KEY_ID,
   awsRegion: process.env.AWS_REGION || "us-east-1",
+  apiKey: process.env.CHATBOT_API_KEY,
   awsSecretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
   databaseUrl: process.env.DATABASE_URL,
   dbIdleTimeoutMs: numberFromEnv("DB_IDLE_TIMEOUT_MS", 30000),
@@ -36,7 +37,7 @@ const env = Object.freeze({
   otpExpiryMinutes: numberFromEnv("OTP_EXPIRY_MINUTES", 10),
   passwordResetWindowMinutes: numberFromEnv("PASSWORD_RESET_WINDOW_MINUTES", 15),
   patientDocumentsBucket: process.env.PATIENT_DOCUMENTS_BUCKET || "patient-documents",
-  port: numberFromEnv("PORT", 8080),
+  port: numberFromEnv("PORT", 3000),
   rateLimitMax: numberFromEnv("RATE_LIMIT_MAX", 100),
   rateLimitWindowMs: numberFromEnv("RATE_LIMIT_WINDOW_MS", 15 * 60 * 1000),
   smtpHost: process.env.SMTP_HOST,
@@ -44,6 +45,11 @@ const env = Object.freeze({
   smtpPort: numberFromEnv("SMTP_PORT", 587),
   smtpSecure: booleanFromEnv("SMTP_SECURE", false),
   smtpUser: process.env.SMTP_USER,
+  ollamaUrl: process.env.OLLAMA_URL,
+  ocrModel: process.env.OCR_MODEL,
+  chatModel: process.env.CHAT_MODEL,
+  codeModel: process.env.CODE_MODEL,
+  visionModel: process.env.VISION_MODEL,
   userProfileImagesBucket: process.env.USER_PROFILE_IMAGES_BUCKET || "user-profile-images",
 });
 
