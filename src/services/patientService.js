@@ -37,8 +37,6 @@ const {
   verifyOtpSchema,
 } = require("../validations");
 const emailService = require("./emailService");
-// const { PutObjectCommand, GetObjectCommand, DeleteObjectCommand } = require("@aws-sdk/client-s3");
-// const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const s3service = require("./s3service");
 
 async function createUniquePatientCode() {
